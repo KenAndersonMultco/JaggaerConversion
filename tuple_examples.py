@@ -24,10 +24,10 @@ print t[0]
 print 'print 3rd item of a 4-item tuple'
 t = (0, 'Nl', 1.2,3)
 print t[2]
+print 'fred'
 
 #nested tuple
 
 t= ('abc',('def','ghi'))
 print 'print 2nd item of 2nd item in nested tuple'
 print t[1][1]
-
