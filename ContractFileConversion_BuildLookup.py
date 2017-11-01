@@ -4,6 +4,7 @@ import csv
 
 #prompt user to select top level folder for documents
 
+#adding a comment to test working with Github
 
 ##for fname in os.listdir('\\nas3\CW-IT\Projects\RM_Docs\BUS2000113'):
 ##    print fname
@@ -26,11 +27,11 @@ dir = 'R:\BUS2000113'
 contractfolders = sorted(os.listdir(dir))
 
 for f in contractfolders:
-    cdir = os.path.join(dir,f) 
+    cdir = os.path.join(dir,f)
     ContractNumber = f[0:10]
     print 'Contract Number is',ContractNumber
     for root, dirs, files in os.walk(cdir):
-        if len(dirs) == 0 and len(files) > 0:  #this is a tuple that has files     
+        if len(dirs) == 0 and len(files) > 0:  #this is a tuple that has files
             #filenames = ''
             maxfilename = ''
             maxfilesize = 0
@@ -65,7 +66,3 @@ for f in contractfolders:
             mywriter.writerow(lineout)
 
 fout.close()
-
-
-
-
