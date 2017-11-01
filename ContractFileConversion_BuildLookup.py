@@ -10,7 +10,8 @@ mywriter = csv.writer(fout,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIM
 
 #Build lookup file with contract name and associated documents
 
-dir = 'R:\BUS2000113'
+#dir = 'R:\BUS2000113'
+dir = 'R:\\1Test'
 contractfolders = sorted(os.listdir(dir))
 
 for f in contractfolders:
