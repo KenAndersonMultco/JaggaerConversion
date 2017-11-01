@@ -4,7 +4,7 @@ import csv
 
 #prompt user to select top level folder for documents
 
-
+#adding another comment to help document commit process
 
 
 #The following section connects to FTP site and getting list of files currently there
@@ -39,9 +39,8 @@ for fname in os.listdir(dir):
         for fname2 in os.listdir(fpath):
             srv.put(os.path.join(fpath,fname2))
     data = srv.listdir()
-    
+
 srv.close()
 
 for i in data:
     print i
-
