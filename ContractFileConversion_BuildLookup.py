@@ -6,6 +6,9 @@ import csv
 
 #adding a comment to test working with Github
 
+#just for fun, lets see what happens if I open the file from
+#the github folder in Idle and make a change.
+
 ##for fname in os.listdir('\\nas3\CW-IT\Projects\RM_Docs\BUS2000113'):
 ##    print fname
 
