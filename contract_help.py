@@ -5,8 +5,9 @@ import os
 
 
 print os.getcwd()
-if os.getcwd() == 'C:\Users\\anderskr\github\JaggaerConversion':
-    foldername = 'H:\JaggaerDC\AppData'
+if os.getcwd() == 'C:\\Users\\anderskr\\github\\JaggaerConversion':
+    foldername = 'C:\\Users\\anderskr\\github\\JaggaerConversion\\AppData'
+    usersfoldername = 'H:\\JaggaerDC\AppData'
 else:
     foldername = 'AppData'
 print os.getcwd()
@@ -153,7 +154,7 @@ users = {}
 ##            users[lname] = x      
 
 #if using Jaggaer user list
-usersfilename = os.path.join(foldername, 'JaggaerUsers.csv')
+usersfilename = os.path.join(usersfoldername, 'JaggaerUsers.csv')
 with open(usersfilename,'r') as u:
     for line in csv.reader(u):
         fname = line[1].lower()

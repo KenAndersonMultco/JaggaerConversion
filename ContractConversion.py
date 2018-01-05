@@ -36,9 +36,9 @@ def convert(filename,contnumb,expire,suffix, env):
     outputfilename = os.path.join(foldername,'ContractDataOut.csv')
     fout = open(outputfilename,'wb')
     if __name__ == '__main__':
-        r = open('h:/JaggaerDC/appdata/rules.csv','r')
+        r = open('AppData/rules.csv','r')
     else:
-        r = open('appdata/rules.csv','r')
+        r = open('AppData/rules.csv','r')
     warnfilename = os.path.join(foldername,'warnings.csv')
     #warn = open('h:/JaggaerDC/warnings.csv','wb')
     warn = open(warnfilename,'wb')

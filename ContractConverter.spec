@@ -4,9 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['ContractConverter.py'],
-             pathex=['c:\\Users\\anderskr\\github\\JaggaerConversion'],
+             pathex=['C:\\Users\\anderskr\\github\\JaggaerConversion'],
              binaries=[],
-             datas=[('h:\\JaggaerDC\\AppData\\rules.csv', 'appdata'), ('h:\\JaggaerDC\\AppData\\MultcoUsers.csv', 'appdata'), ('h:\\JaggaerDC\\AppData\\JaggaerUsers.csv', 'appdata'), ('h:\\JaggaerDC\\AppData\\Nicknames.csv', 'appdata'), ('h:\\JaggaerDC\\AppData\\ContractType.csv', 'appdata'), ('h:\\JaggaerDC\\AppData\\Status.csv', 'appdata'), ('h:\\JaggaerDC\\AppData\\Suppliers.csv', 'appdata'), ('h:\\JaggaerDC\\AppData\\projects.csv', 'appdata')],
+             datas=[('AppData\\rules.csv', 'appdata'), ('h:\\JaggaerDC\\AppData\\JaggaerUsers.csv', 'appdata'), ('AppData\\Nicknames.csv', 'appdata'), ('AppData\\ContractType.csv', 'appdata'), ('AppData\\Status.csv', 'appdata'), ('AppData\\Suppliers.csv', 'appdata'), ('AppData\\projects.csv', 'appdata')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],

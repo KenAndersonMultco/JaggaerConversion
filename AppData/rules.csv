@@ -1,0 +1,37 @@
+ContractNumber,,,transform,,,Project-' & ContractType & '-' & SequentialNumber & '-' & Fiscal Year,Need to spell out rule for generating number,Text,50,ContractNumber
+RenewalNumber,,,default,,0,,,Numeric,NA,RenewalNumber
+ContractName,ContractName,0,copy,,,,,Text,100,ContractName
+ContractType,ContractType,1,map,ContractType,,,,Text,100,ContractType
+Currency,,,default,,USD,,,Text,100,Currency
+FirstPartyId,,,map,Env,,,,Numeric,NA,FirstPartyId
+SecondPartyId,VendorID,4,transform,,vendorid,,default to a test value for now,Numeric,NA,SecondPartyId
+Active,,,default,,FALSE,,,Boolean,NA,Active
+AvailabilityForProducts,,,default,,All,,,Text,NA,AvailabilityForProducts
+ApplyAutomatically,,,default,,FALSE,,,Boolean,NA,ApplyAutomatically
+Status,Status,5,map,status,,,need to validate map with Heidi,Text,NA,Status
+Archive,,,default,,FALSE,,,Text,NA,Archive
+ProjectCode,Department,6,map,project,,,,Text,7,ProjectCode
+Confidential,,,default,,FALSE,,,Boolean,NA,Confidential
+CreatedDate,,,default,,,,,Date,NA,CreatedDate
+StartOnExecution,,,default,,FALSE,,,Boolean,NA,StartOnExecution
+StartDate,ContractStart,7,transform,,,YYYY-MM-DD,,Date,NA,StartDate
+EndDate,ContractEnd,8,transform,,,YYYY-MM-DD,,Date,NA,EndDate
+DoesNotExpire,,,default,,FALSE,,,Boolean,NA,DoesNotExpire
+TimeZoneId,,,default,,US/Pacific,,,Text,NA,TimeZoneId
+RequiresPriceFile,,,default,,FALSE,,,Boolean,NA,RequiresPriceFile
+AutoRenew,,,default,,FALSE,,tbd; default to FALSE for test,Boolean,NA,AutoRenew
+AutoApplyPriceFileOnRenew,,,default,,FALSE,,,Boolean,NA,AutoApplyPriceFileOnRenew
+UserVisibility,,,default,,Full,,,Text,7,UserVisibility
+ContractManagerVisibility,,,default,,Full,,,Text ,7,ContractManagerVisibility
+EnforceBudget,,,default,,FALSE,,,Boolean,NA,EnforceBudget
+ContractManagers,,9,transform,,,,need to map names to userids; default for test if needed,Text,NA,ContractManagers
+Stakeholders,,10,transform,,,,"tbd, if using need to map name to userid, default to blank for test",Text,NA,Stakeholders
+GrantAccessViaDeptAndRole,,,default,,TRUE,,,Boolean,NA,GrantAccessViaDeptAndRole
+AppliesToDepartments,,,default,,All,,,Text,NA,AppliesToDepartments
+AppliesToRoles,,,default,,All,,,Text,NA,AppliesToRoles
+MainDocumentAttachment,,,default,,,,default to blank for test,Alpha-numeric,NA,MainDocumentAttachment
+AdditionalAttachments,,,default,,,,default to blank for test,Alpha-numeric ,,AdditionalAttachments
+Amendment No,,,default,,0,,,,,Amendment No
+*SAPNumber,,11,copy,,,,,,,*SAPNumber
+*SRMRFXNumber,RFx Number,12,copy,,,,,,,*SRMRFXNumber
+*TargetValue,Target Value,13,copy,,,,,,,*TargetValue
