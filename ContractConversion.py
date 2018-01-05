@@ -25,11 +25,9 @@ def convert(filename,contnumb,expire,suffix, env):
             NumberSuffix = '-' + NumberSuffix
 
     if env == 'Test':
-        FirstPartyID = '10539771'
+        FirstPartyID = '1000105838'
     else:
         FirstPartyID = '19281501'
-
-    
 
     #f = open('h:/JaggaerDC/ContractData.csv','r')
     f = open(filename,'r')
@@ -45,13 +43,13 @@ def convert(filename,contnumb,expire,suffix, env):
     #warn = open('h:/JaggaerDC/warnings.csv','wb')
     warn = open(warnfilename,'wb')
     rules = []
+    colnumlookup = {}
     #Put expired rule into a settings file?  If there is anything else that can be put there, do so
     #maybe defaults for contract manager if it can't be identified from the rules.
     #ExpiredExclusionFilter = 
 
     #process rules - make into a list of dictionaries
     for line in csv.reader(r):
-        
         rules.append(dict(SciFieldName=line[0],
                           Input=line[1],
                           InputColNo=line[2],
@@ -60,6 +58,10 @@ def convert(filename,contnumb,expire,suffix, env):
                           DefaultValue=line[5],
                           TransformRule=line[6],
                           Header=line[10]))
+        #create dictionary of field names and input col no
+        if line[2] <> '':
+            colnumlookup[line[0]] = int(line[2])
+            
     r.close()
 
     mywriter = csv.writer(fout, delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
@@ -78,37 +80,32 @@ def convert(filename,contnumb,expire,suffix, env):
     yeardiff = timedelta(ExpirationCutoff)
     cutoff = now-yeardiff
 
-    #get the column index for ProjectCode and ContractType from rules list - do outside of processing the input
-    #file so the code is only executed once
-    projectfound = False
-    typefound = False
-    for rx in rules:
-        if rx['SciFieldName'] == 'ProjectCode':
-            projindex = int(rx['InputColNo'])
-            projectfound = True
-            print projindex
-        if rx['SciFieldName'] == 'Contract Type':
-            typeindex = int(rx['InputColNo'])
-            typefound = True
-            print typeindex
-        if projectfound and typefound:
-            break        
+    #Get column indexes for various input columns
+    projindex = colnumlookup['ProjectCode']
+    typeindex = colnumlookup['ContractType']
+    startindex = colnumlookup['StartDate']
+    endindex = colnumlookup['EndDate']
+    mgrindex = colnumlookup['ContractManagers']
+    stakeindex = colnumlookup['Stakeholders']
+    contractnameindex = colnumlookup['ContractName']
+    sapnumberindex = colnumlookup['*SAPNumber']
 
     for line in csv.reader(f):
+        #skip the header line if there is one
+        #shouldn't hardcode the column header but challenge is there might or might not be a header line
+        #so can't just skip the first line
+        if line[0] == 'Contract_Name':
+            continue
         lineout = []
         warning = []
         
-        ####if expired more than 1 year ago, do not import
-        expdate = line[10].split('/')
+        #if expired before the number of days before the current date
+        #specified, do not import
+    
+        expdate = line[endindex].split('/')
         expdatetest = date(int(expdate[2]),int(expdate[0]),int(expdate[1]))
         if expdatetest < cutoff:
             continue
-        
-    ##    if expdatetest < now:
-    ##        diff = abs(now - expdatetest)
-    ##        if diff.days > 365:
-    ##            continue
-        #####################
 
         #get project and contract type - it is used in the contract number, as well as being its own field
         projectcode = ch.project.get(line[projindex],'badkey')
@@ -119,67 +116,65 @@ def convert(filename,contnumb,expire,suffix, env):
      
         for ru in rules:
             if ru['RuleType'] == 'transform':
-                if ru['SciFieldName'] == 'Second PartyID':
-                   SupplierID, dist, mindist, minkey = ch.getSupplierID(line[int(ru['InputColNo'])])
-                   lineout.append(SupplierID)
-                   if dist > 0:
-                        warning.append('Vendor')
-                        warning.append(line[0]) #Sap contract number
-                        warning.append(number) #SciQuest contract number
-                        warning.append(line[2]) #contact name
-                        warning.append(line[int(ru['InputColNo'])]) #vendor name
-                        warning.append(mindist)
-                        warning.append(minkey)
-                        warning.append('Exact match not found.  Closest match used.')
-                        warninglist.append(warning)
-                        #warningwriter.writerow(warnings)
-                if ru['SciFieldName'] == 'Contract Number':
+                if ru['SciFieldName'] == 'SecondPartyId':
+                #this one needs work - eventually should compare on SAP Vendor ID
+                #for now, using a default supplier and we will pull in the correct ones
+                #for testing the extract for workday
+                    if env == 'Test':
+                       lineout.append('1000192800')
+                    else:
+                       SupplierID, dist, mindist, minkey = ch.getSupplierID(line[int(ru['InputColNo'])])
+                       lineout.append(SupplierID)
+                       if dist > 0:
+                            warning.append('Vendor')
+                            warning.append(line[0]) #Sap contract number
+                            warning.append(number) #SciQuest contract number
+                            warning.append(line[2]) #contact name
+                            warning.append(line[int(ru['InputColNo'])]) #vendor name
+                            warning.append(mindist)
+                            warning.append(minkey)
+                            warning.append('Exact match not found.  Closest match used.')
+                            warninglist.append(warning)
+                            #warningwriter.writerow(warnings)
+                if ru['SciFieldName'] == 'ContractNumber':
                     number = projectcode + '-' + typeabbrev + '-' + str(ContractNumber) + \
-                    '-' + ch.getFY(line[9]) + NumberSuffix
+                    '-' + ch.getFY(line[startindex]) + NumberSuffix
                     lineout.append(number)
                     ContractNumber += 1
                 elif ru['SciFieldName'] == 'StartDate' or ru['SciFieldName'] == 'EndDate':
                     lineout.append(ch.formatDate(line[int(ru['InputColNo'])])) #start date need to reformat
                     #print line[int(ru['InputColNo'])], formatDate(line[int(ru['InputColNo'])])
                 elif ru['SciFieldName'] == 'ContractManagers':
-                    manager,stakeholder = ch.getManagerStakeholder(line[6],line[8])
-                    #if not either not = '', get userid from name
+                    #manager, stakeholder = ch.getManagerStakeholder(line[line[stakeindex], mgrindex])
+                    #above line calls a function that does various defaulting and switching around depending on
+                    #which fields between owner and support person are populated in SAP
+                    #for now removing this call in favor of defaulting a manager based on department or just leaving blank.
+
+                    manager = line[mgrindex]
                     if manager != '':
                         manager_userid = ch.getUserID(manager)
-                    if manager_userid == 'NOMATCH' or manager_userid == 'NoLastNameMatch':
-                        #write warning
-                        warning = []
-                        warning.append('Manager')
-                        warning.append(line[0])
-                        warning.append(manager)
-                        warning.append(manager_userid)
-                        warninglist.append(warning)
-                        lineout.append('')
-                    else:
-                        if manager == '':
+                        if manager_userid == 'NOMATCH':
+                            #write warning
+                            warninglist.append(ch.writeWarning('Manager',line[contractnameindex],line[sapnumberindex],manager,manager_userid))
                             lineout.append('')
                         else:
                             lineout.append(manager_userid)
+                    else:    
+                        warninglist.append(ch.writeWarning('Manager',line[contractnameindex],line[sapnumberindex],'','No contract manager specified'))
+                        lineout.append('')
                 elif ru['SciFieldName'] == 'Stakeholders':
-                    
+                    stakeholder = line[stakeindex]
                     if stakeholder != '':
                         stakeholder_userid = ch.getUserID(stakeholder)
-                    #else:
-                    #    stakeholder_userid = ''
-                    if stakeholder_userid == 'NOMATCH' or stakeholder_userid == 'NoLastNameMatch':
-                        #write warning
-                        warning = []
-                        warning.append('Stakeholder')
-                        warning.append(line[0])
-                        warning.append(stakeholder)
-                        warning.append(stakeholder_userid)
-                        warninglist.append(warning)
-                        lineout.append('')
-                    else:
-                        if stakeholder == '':
+                        if stakeholder_userid == 'NOMATCH':
+                            #write warning
+                            warninglist.append(ch.writeWarning('Stakeholder',line[contractnameindex],line[sapnumberindex],stakeholder,stakeholder_userid))
                             lineout.append('')
                         else:
                             lineout.append(stakeholder_userid)
+                    else:
+                        warninglist.append(ch.writeWarning('Stakeholder',line[contractnameindex],line[sapnumberindex],'','No stakeholder specified'))
+                        lineout.append('')                 
                 #else:
                 #    lineout.append(line[int(ru['InputColNo'])]) #end date need to reformat
             elif ru['RuleType'] == 'default':
@@ -199,8 +194,13 @@ def convert(filename,contnumb,expire,suffix, env):
                 elif ru['MapName'] == 'Env':
                     lineout.append(FirstPartyID)
             elif ru['RuleType'] == 'copy':
-                lineout.append(line[int(ru['InputColNo'])])
-                
+                if ru['SciFieldName'] == 'ContractName':
+                    if line[int(ru['InputColNo'])] == '':
+                        lineout.append('Unnamed Contract')
+                    else:
+                        lineout.append(line[int(ru['InputColNo'])])
+                else:
+                    lineout.append(line[int(ru['InputColNo'])])    
         mywriter.writerow(lineout)
     #write warnings
     for wa in warninglist:
@@ -209,13 +209,12 @@ def convert(filename,contnumb,expire,suffix, env):
             warningline.append(item)
         warningwriter.writerow(warningline)
             
-        
     f.close()
     fout.close()
     warn.close()
 
 if __name__ == '__main__':
-    convert('h:\JaggaerDC\ContractData.csv')
+    convert('h:\\JaggaerDC\\ContractData.csv','','','','Test')
 
     
 

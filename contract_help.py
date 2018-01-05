@@ -4,11 +4,13 @@ import os
 
 
 
-if os.getcwd() == 'C:\Python27\Scripts\MyScripts':
+print os.getcwd()
+if os.getcwd() == 'C:\Users\\anderskr\github\JaggaerConversion':
     foldername = 'H:\JaggaerDC\AppData'
 else:
     foldername = 'AppData'
-
+print os.getcwd()
+print foldername
 def formatDate(date):
     parts = date.split('/')
     return parts[2] + '-' + parts[0] + '-' + parts[1] + ' 12:00 AM'
@@ -36,35 +38,68 @@ def getManagerStakeholder(owner,support):
         stakeholder = owner
     return manager,stakeholder
 def getUserID(name):
+    name_candidates = []
     nw = name.split()
     name_elements = len(nw)
-    #get last name
-    ln = nw[name_elements-1].lower()
-    #get first name
-    fn = ''
-    for i in range(0,name_elements-1):
-        fn = fn + nw[i].lower()
-    if ln in users:
-        #try to match first name
-        fnamedict = users[ln]
-        if fn in fnamedict:
-            stakeholder = fnamedict[fn]
-        elif len(fnamedict) == 1:
-            fn = fnamedict.keys()[0]
-            stakeholder = fnamedict[fn]
-        elif fn in nicknames:
-            #look for nickname match
-            stakeholder = 'NoFirstNameMatch' #set stakeholder to nomatch is default, override if you find a nickname match
-            for nicky in nicknames[fn]:
-                #see if any of the nicknames is in the fnamedict
-                if nicky in fnamedict:
-                    stakeholder = fnamedict[nicky]
-                    break
-        else:
-            stakeholder = 'NOMATCH'
+    ##    #get last name
+    ##    ln = nw[name_elements-1].lower()
+    ##    #get first name
+    ##    fn = ''
+    ##    for i in range(0,name_elements-1):
+    ##        fn = fn + nw[i].lower()
+    if name_elements == 2:
+        name_candidates.append([nw[0],nw[1]])
+    elif name_elements == 3:
+        name_candidates.append([nw[0],nw[1] + ' ' + nw[2]])
+        name_candidates.append([nw[0] + ' ' + nw[1], nw[2]])
+        name_candidates.append([nw[1],nw[2]])
+        name_candidates.append([nw[0],nw[1]])
+        name_candidates.append([nw[0],nw[1] + nw[2]])
+    elif name_elements == 4:
+        name_candidates.append([nw[0],nw[1] + ' ' + nw[2]])
+        name_candidates.append([nw[0] + ' ' + nw[1], nw[2]])
+        name_candidates.append([nw[0] + ' ' + nw[1],nw[2] + ' ' + nw[3]])
+        name_candidates.append([nw[0],nw[1] + ' ' + nw[2] + ' ' + nw[3]])
+        name_candidates.append([nw[0] + ' ' + nw[1]+ ' ' + nw[2], nw[3]])
     else:
-        stakeholder = 'NoLastNameMatch'
-    return stakeholder
+        return 'Name has more than four components - cannot process'   
+
+    for nc in name_candidates:
+        fn = nc[0].lower()
+        ln = nc[1].lower()
+        #print 'first name is ',fn,', last name is ', ln
+        #print ln
+        #this gets tricky when you're trying more than one candidate.
+        #if you find a match, return it
+        #if you get through them and haven't found a match, just return NOMATCH
+        if ln in users:
+            #print 'ln is in users'
+            #try to match first name
+            fnamedict = users[ln]
+            if fn in fnamedict:
+                #stakeholder = fnamedict[fn]
+                #print 'fn in fnamedict'
+                return fnamedict[fn]
+            elif len(fnamedict) == 1:
+                #this assumes if there is only one entry for the last name you've made a match
+                fn = fnamedict.keys()[0]
+                #stakeholder = fnamedict[fn]
+                return fnamedict[fn]
+            elif fn in nicknames:
+                #look for nickname match
+                #stakeholder = 'NoFirstNameMatch' #set stakeholder to nomatch is default, override if you find a nickname match
+                for nicky in nicknames[fn]:
+                    #see if any of the nicknames is in the fnamedict
+                    if nicky in fnamedict:
+                        #stakeholder = fnamedict[nicky]
+                        #break
+                        return fnamedict[nicky]
+            #else:
+                #stakeholder = 'NOMATCH'
+        #else:
+            #stakeholder = 'NoLastNameMatch'
+    #return stakeholder
+    return 'NOMATCH'
 def getSupplierID(name):
     #get supplier with min edit distance.  If there is an exact match, distance s/b 0
                 mindist = 10000
@@ -81,7 +116,15 @@ def getSupplierID(name):
                         mindist = dist
                         minkey = k
                 return suppliers[minkey], dist, mindist, minkey
-                
+def writeWarning(colname,contractname,contractnumber,personname,msg):
+    warning = []
+    warning.append(colname)
+    warning.append(contractname)
+    warning.append(contractnumber)
+    warning.append(personname)
+    warning.append(msg)
+    return warning
+    
 #process input files
 
 #def processFiles(foldername):
