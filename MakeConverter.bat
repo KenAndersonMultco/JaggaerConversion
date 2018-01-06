@@ -1,10 +1,10 @@
 ::echo off
-cd c:\Users\anderskr\github\JaggaerConversion
+::cd c:\Users\anderskr\github\JaggaerConversion
 ::pyinstaller --noconfirm --log-level=WARN ^
 ::  --windowed ^
 ::  --add-data="h:\JaggaerDC\MultcoUsers.csv;appdata" ^
 ::  ContractConverter.py
-pyinstaller --windowed --noconfirm ^
+pyinstaller --windowed --noconfirm --log-level=DEBUG ^
 --add-data="AppData\rules.csv;appdata" ^
 --add-data="h:\JaggaerDC\AppData\JaggaerUsers.csv;appdata" ^
 --add-data="AppData\Nicknames.csv;appdata" ^

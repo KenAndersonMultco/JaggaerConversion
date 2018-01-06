@@ -89,6 +89,8 @@ def convert(filename,contnumb,expire,suffix, env):
     stakeindex = colnumlookup['Stakeholders']
     contractnameindex = colnumlookup['ContractName']
     sapnumberindex = colnumlookup['*SAPNumber']
+    suppliernumberindex = colnumlookup['SecondPartyId']
+    suppliernameindex = suppliernumberindex + 1
 
     for line in csv.reader(f):
         #skip the header line if there is one
@@ -120,22 +122,17 @@ def convert(filename,contnumb,expire,suffix, env):
                 #this one needs work - eventually should compare on SAP Vendor ID
                 #for now, using a default supplier and we will pull in the correct ones
                 #for testing the extract for workday
-                    if env == 'Test':
-                       lineout.append('1000192800')
-                    else:
-                       SupplierID, dist, mindist, minkey = ch.getSupplierID(line[int(ru['InputColNo'])])
+                    #if env == 'Test':
+                    #   lineout.append('1000192800')
+                    #else:
+                   SupplierID = ch.getSupplierID(line[suppliernumberindex])
+                   if SupplierID == 'VendorNumberNotFound':
+                       warninglist.append(ch.writeWarning('SupplierID',line[contractnameindex],line[sapnumberindex],line[suppliernameindex] + ':' + \
+                       line[suppliernumberindex],'SAP Vendor number not found'))
+                       lineout.append('')
+                   else:
                        lineout.append(SupplierID)
-                       if dist > 0:
-                            warning.append('Vendor')
-                            warning.append(line[0]) #Sap contract number
-                            warning.append(number) #SciQuest contract number
-                            warning.append(line[2]) #contact name
-                            warning.append(line[int(ru['InputColNo'])]) #vendor name
-                            warning.append(mindist)
-                            warning.append(minkey)
-                            warning.append('Exact match not found.  Closest match used.')
-                            warninglist.append(warning)
-                            #warningwriter.writerow(warnings)
+                   
                 if ru['SciFieldName'] == 'ContractNumber':
                     number = projectcode + '-' + typeabbrev + '-' + str(ContractNumber) + \
                     '-' + ch.getFY(line[startindex]) + NumberSuffix

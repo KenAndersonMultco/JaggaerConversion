@@ -4,7 +4,7 @@ ContractName,ContractName,0,copy,,,,,Text,100,ContractName
 ContractType,ContractType,1,map,ContractType,,,,Text,100,ContractType
 Currency,,,default,,USD,,,Text,100,Currency
 FirstPartyId,,,map,Env,,,,Numeric,NA,FirstPartyId
-SecondPartyId,VendorID,4,transform,,vendorid,,default to a test value for now,Numeric,NA,SecondPartyId
+SecondPartyId,VendorID,3,transform,,vendorid,,default to a test value for now,Numeric,NA,SecondPartyId
 Active,,,default,,FALSE,,,Boolean,NA,Active
 AvailabilityForProducts,,,default,,All,,,Text,NA,AvailabilityForProducts
 ApplyAutomatically,,,default,,FALSE,,,Boolean,NA,ApplyAutomatically

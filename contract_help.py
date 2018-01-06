@@ -1,5 +1,5 @@
 import csv
-import editdistance
+#import editdistance
 import os
 
 
@@ -7,9 +7,10 @@ import os
 print os.getcwd()
 if os.getcwd() == 'C:\\Users\\anderskr\\github\\JaggaerConversion':
     foldername = 'C:\\Users\\anderskr\\github\\JaggaerConversion\\AppData'
-    usersfoldername = 'H:\\JaggaerDC\AppData'
+    usersfoldername = 'H:\\JaggaerDC\\AppData'
 else:
     foldername = 'AppData'
+    usersfoldername = 'AppData'
 print os.getcwd()
 print foldername
 def formatDate(date):
@@ -101,22 +102,8 @@ def getUserID(name):
             #stakeholder = 'NoLastNameMatch'
     #return stakeholder
     return 'NOMATCH'
-def getSupplierID(name):
-    #get supplier with min edit distance.  If there is an exact match, distance s/b 0
-                mindist = 10000
-                #results = {}
-                for k in suppliers.keys():
-                    #dist = editdistance.eval(line[int(ru['InputColNo'])].lower(),k.lower())
-                    dist = editdistance.eval(name.lower(),k.lower())
-                    #results[k] = dist
-                    if dist == 0:
-                        minkey = k
-                        break
-                    #results[k] = dist
-                    if dist < mindist:
-                        mindist = dist
-                        minkey = k
-                return suppliers[minkey], dist, mindist, minkey
+def getSupplierID(SAPVendorNumber):
+    return suppliers.get(SAPVendorNumber,'VendorNumberNotFound')
 def writeWarning(colname,contractname,contractnumber,personname,msg):
     warning = []
     warning.append(colname)
