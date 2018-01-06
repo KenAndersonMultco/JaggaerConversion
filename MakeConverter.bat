@@ -4,7 +4,7 @@
 ::  --windowed ^
 ::  --add-data="h:\JaggaerDC\MultcoUsers.csv;appdata" ^
 ::  ContractConverter.py
-pyinstaller --windowed --noconfirm --log-level=DEBUG ^
+pyinstaller --windowed --noconfirm  ^
 --add-data="AppData\rules.csv;appdata" ^
 --add-data="h:\JaggaerDC\AppData\JaggaerUsers.csv;appdata" ^
 --add-data="AppData\Nicknames.csv;appdata" ^
