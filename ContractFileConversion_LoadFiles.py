@@ -18,7 +18,8 @@ cnopts.hostkeys = None
 srv = pysftp.Connection(host='files.sciquest.com',username='multnomah_ken',
                         password='multco4sc1qu3st', cnopts=cnopts)
 #dir = 'R:\BUS2000113'
-dir = 'R:\\1Test'
+#dir = 'R:\\1Test'
+dir = 'R:\\Prod\\BUS2000113'
 contractfolders = sorted(os.listdir(dir))
 for f in contractfolders:
     for fname in os.listdir(os.path.join(dir,f)):
