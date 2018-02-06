@@ -29,8 +29,8 @@ Stakeholders,,10,transform,,,,"tbd, if using need to map name to userid, default
 GrantAccessViaDeptAndRole,,,default,,TRUE,,,Boolean,NA,GrantAccessViaDeptAndRole
 AppliesToDepartments,,,default,,All,,,Text,NA,AppliesToDepartments
 AppliesToRoles,,,default,,All,,,Text,NA,AppliesToRoles
-MainDocumentAttachment,,,default,,,,default to blank for test,Alpha-numeric,NA,MainDocumentAttachment
-AdditionalAttachments,,,default,,,,default to blank for test,Alpha-numeric ,,AdditionalAttachments
+MainDocumentAttachment,,,lookup,,,,default to blank for test,Alpha-numeric,NA,MainDocumentAttachment
+AdditionalAttachments,,,lookup,,,,default to blank for test,Alpha-numeric ,,AdditionalAttachments
 Amendment No,,,default,,0,,,,,Amendment No
 *SAPNumber,,11,copy,,,,,,,*SAPNumber
 *SRMRFXNumber,RFx Number,12,copy,,,,,,,*SRMRFXNumber

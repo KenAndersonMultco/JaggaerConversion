@@ -31,6 +31,12 @@ def convert(filename,contnumb,expire,suffix, env):
 
     #f = open('h:/JaggaerDC/ContractData.csv','r')
     f = open(filename,'r')
+
+    #this should probably go in the helper script to be consistent
+    filexrefdict = {}
+    with open('h:/JaggaerDC/ContractFileData.csv','r') as filexref:
+        for line in csv.reader(filexref):
+            filexrefdict[line[0]] = [line[1],line[2]]  
     
     #fout = open('h:/JaggaerDC/ContractDataOut.csv','wb')
     outputfilename = os.path.join(foldername,'ContractDataOut.csv')
@@ -113,6 +119,9 @@ def convert(filename,contnumb,expire,suffix, env):
         projectcode = ch.project.get(line[projindex],'badkey')
         typecode = ch.ContractType.get(line[typeindex],['badkey','badkey'])[0]
         typeabbrev = ch.ContractType.get(line[typeindex],['badkey','badkey'])[1]
+        sapnumber = line[sapnumberindex]
+        maindoc = filexrefdict.get(sapnumber,['',''])[0]
+        attachments = filexrefdict.get(sapnumber,['',''])[1]
         #typecode = 'services'
         #typeabbrev = 'svc'
      
@@ -197,7 +206,12 @@ def convert(filename,contnumb,expire,suffix, env):
                     else:
                         lineout.append(line[int(ru['InputColNo'])])
                 else:
-                    lineout.append(line[int(ru['InputColNo'])])    
+                    lineout.append(line[int(ru['InputColNo'])])
+            elif ru['RuleType'] == 'lookup':
+                if ru['SciFieldName'] == 'MainDocumentAttachment':
+                    lineout.append(maindoc)
+                else:
+                    lineout.append(attachments)
         mywriter.writerow(lineout)
     #write warnings
     for wa in warninglist:

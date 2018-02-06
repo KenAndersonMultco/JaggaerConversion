@@ -24,7 +24,7 @@ for line in csv.reader(contractdata):
 #Build lookup file with contract name and associated documents
 
 
-contractdir = 'R:\Prod\BUS2000113'
+contractdir = 'R:\\BUS2000113'
 rfxdir = 'R:\BUS2200'
 #dir = 'R:\\1Test'
 rfxfolders = sorted(os.listdir(rfxdir))
