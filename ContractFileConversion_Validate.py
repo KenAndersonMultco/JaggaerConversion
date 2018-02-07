@@ -1,22 +1,19 @@
 import os
 import csv
-import xml.etree.ElementTree as ET
-parmdict = {}
-tree = ET.parse('h:/JaggaerDC/config.xml')
-root = tree.getroot()
-for child in root:
-    parmdict[child.tag] = child.text
+import GetConfig as g
+##import xml.etree.ElementTree as ET
+##parmdict = {}
+##tree = ET.parse('//nas3/CW-IT/Projects/GG/JaggaerConversion/AppData/config.xml')
+##root = tree.getroot()
+##for child in root:
+##    parmdict[child.tag] = child.text
     
 
-#contractdir = 'R:\\Prod\\BUS2000113'
-#contractdir = 'R:\\BUS2000113'
-contractdir = parmdict['ContractFileDirectory']
+contractdir = g.parmdict['ContractFileDirectory']
 contractfolders = sorted(os.listdir(contractdir))
 
-#rfxdir = 'R:\\BUS2200'
-rfxdir = parmdict['RFXFileDirectory']
+rfxdir = g.parmdict['RFXFileDirectory']
 rfxfolders = sorted(os.listdir(rfxdir))
-
 
 contractlist = []
 rfxdict = {}
@@ -38,11 +35,11 @@ log3list = []
 log4list = []
 log5list = []
 
-log1path = os.path.join(parmdict['LogFileDirectory'],'ContractsNotLoaded.csv')
-log2path = os.path.join(parmdict['IOFileDirectory'],'ContractFilesLoaded.csv')
-log3path = os.path.join(parmdict['LogFileDirectory'],'RFXsNotLoaded.csv')
-log4path = os.path.join(parmdict['IOFileDirectory'],'RFxFilesLoaded.csv')
-log5path = os.path.join(parmdict['LogFileDirectory'],'ListOfRFxAndAssociatedContracts.csv')
+log1path = os.path.join(g.parmdict['LogFileDirectory'],'ContractsNotLoaded.csv')
+log2path = os.path.join(g.parmdict['IOFileDirectory'],'ContractFilesLoaded.csv')
+log3path = os.path.join(g.parmdict['LogFileDirectory'],'RFXsNotLoaded.csv')
+log4path = os.path.join(g.parmdict['IOFileDirectory'],'RFxFilesLoaded.csv')
+log5path = os.path.join(g.parmdict['LogFileDirectory'],'ListOfRFxAndAssociatedContracts.csv')
 #open log files
 log1 = open(log1path,'wb')
 log2 = open(log2path,'wb')
@@ -55,7 +52,6 @@ log3writer = csv.writer(log3,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MIN
 log4writer = csv.writer(log4,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 log5writer = csv.writer(log5,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 
-
 #write log file headers
 
 log1writer.writerow(['ContractNumber','ContractName'])
@@ -63,7 +59,6 @@ log2writer.writerow(['ContractFolder','ContractFileName'])
 log3writer.writerow(['RFxNumber','RFxName'])
 log4writer.writerow(['RFxFolder','RFxFileName'])
 log5writer.writerow(['RFxNumber','RFxName','AssociatedContractNumber','AssociatedContractName'])
-
 
 #read the FM folders and build an RFX Number to RFx Name dictionary
 
@@ -74,7 +69,7 @@ for z in rfxfolders:
 
 #build a list of contract numbers and associated RFx numbers
 #with open('h:/JaggaerDC/ContractData.csv','r') as contractdata:
-with open(parmdict['HeaderDataFilePath'],'r') as contractdata:
+with open(g.parmdict['HeaderDataFilePath'],'r') as contractdata:
     for line in csv.reader(contractdata):
         contracts_on_input_file_count += 1
         contractnum = line[11]

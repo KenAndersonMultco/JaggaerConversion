@@ -1,14 +1,18 @@
 import os
 import csv
-
+import GetConfig as g
 
 #prompt user to select top level folder for documents or put in a config file
 
+iofiledir = g.parmdict['IOFileDirectory']
+logfiledir = g.parmdict['LogFileDirectory']
 
-
-contractdata = open('h:/JaggaerDC/ContractData.csv','r')
-fout = open('h:/JaggaerDC/ContractFileData.csv','wb')
+contractdata = open(g.parmdict['HeaderDataFilePath'],'r')
+#fout = open('h:/JaggaerDC/ContractFileData.csv','wb')
+fout = open(os.path.join(iofiledir,'ContractFileData.csv'),'wb')
+log = open(os.path.join(logfiledir,'ContractFileXrefLog.csv'),'wb')
 mywriter = csv.writer(fout,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
+logwriter = csv.writer(log,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 contract_rfx = {}
 rfx_contract = {}
 
@@ -24,8 +28,8 @@ for line in csv.reader(contractdata):
 #Build lookup file with contract name and associated documents
 
 
-contractdir = 'R:\\BUS2000113'
-rfxdir = 'R:\BUS2200'
+contractdir = g.parmdict['ContractFileDirectory']
+rfxdir = g.parmdict['RFXFileDirectory']
 #dir = 'R:\\1Test'
 rfxfolders = sorted(os.listdir(rfxdir))
 contractfolders = sorted(os.listdir(contractdir))
@@ -46,7 +50,10 @@ for rfxf in rfxfolders:
             rfxfilenames.append(rfxfname)
         rfxdict[RFxNumber] = rfxfilenames
     else:
-        print 'RFx Number ' + RFxNumber + ' is not associated with a contract on the conversion input file'
+        logline = []
+        line = 'RFx Number ' + RFxNumber + ' is not associated with a contract on the conversion input file'
+        logline.append(line)
+        logwriter.writerow(logline)
         
 for f in contractfolders:
     ContractNumber = f[0:10]
@@ -92,15 +99,22 @@ for f in contractfolders:
                     else:
                         attachments = attachments + '|' +  rfxstuff
             else:
-                print 'rfx ' + crfx + ' associated with contract ' + ContractNumber + ' does not have any files'
+                logline = []
+                line =  'rfx ' + crfx + ' associated with contract ' + ContractNumber + ' does not have any files'
+                logline.append(line)
+                logwriter.writerow(logline)
         lineout.append(attachments)
         mywriter.writerow(lineout)
     else:
-        print 'Contract #' + ContractNumber + ' was not found the contract conversion input file.  It may not be active'
+        logline = []
+        line = 'Contract #' + ContractNumber + ' was not found on the contract conversion input file.  It may not be active'
+        logline.append(line)
+        logwriter.writerow(logline)
 
 print str(rfxfilecount) + ' rfx files read'
 print str(contractfilecount) + ' contract files read.'
 fout.close()
+log.close()
 contractdata.close()
 
 

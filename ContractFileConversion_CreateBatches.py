@@ -1,12 +1,17 @@
 import os
 import csv
 import math as m
+import GetConfig as g
 
-contractfiles = open('h:/JaggaerDC/ContractFilesLoaded.csv','r')
-rfxfiles = open('h:/JaggaerDC/RFxFilesLoaded.csv','r')
+iofiledir = g.parmdict['IOFileDirectory']
 
-batchsize = 500.0
+#contractfiles = open('h:/JaggaerDC/ContractFilesLoaded.csv','r')
+#rfxfiles = open('h:/JaggaerDC/RFxFilesLoaded.csv','r')
+contractfiles = open(os.path.join(iofiledir,'ContractFilesLoaded.csv'),'r')
+rfxfiles = open(os.path.join(iofiledir,'RFxFilesLoaded.csv'),'r')
 
+batchsize = float(g.parmdict['Batchsize'])
+print 'batchsize is ' + str(batchsize)
 
 cfread = csv.reader(contractfiles)
 rfread = csv.reader(rfxfiles)
@@ -38,13 +43,15 @@ rfxwriters = []
     
 for i in crange:
     filename = 'ContractBatch_' + str(i) + '.csv'
-    filepath = 'h:/JaggaerDC/Batches/Contract/' + filename
+    #filepath = 'h:/JaggaerDC/Batches/Contract/' + filename
+    filepath = os.path.join(iofiledir,'Batches/Contract',filename)              
     batchfile = open(filepath,'wb')
     fileobjects.append(batchfile)
     writers.append(csv.writer(batchfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL))
 for j in rfxrange:
     filename = 'RFxBatch_' + str(j) + '.csv'
-    filepath = 'h:/JaggaerDC/Batches/RFx/' + filename
+    #filepath = 'h:/JaggaerDC/Batches/RFx/' + filename
+    filepath = os.path.join(iofiledir,'Batches/RFx',filename)
     batchfile = open(filepath,'wb')
     rfxfileobjects.append(batchfile)
     rfxwriters.append(csv.writer(batchfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL))
