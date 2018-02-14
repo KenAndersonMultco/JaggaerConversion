@@ -3,12 +3,12 @@ import sys
 import csv
 from datetime import date
 from datetime import timedelta
-
+import GetConfig as g
 import contract_help as ch
 
-def convert(filename,contnumb,expire,suffix, env):
+def convert(filename,contnumb,expire,suffix,env):
 
-    foldername = os.path.dirname(filename)
+    #foldername = os.path.dirname(filename)
 
     if __name__ == '__main__':
         ContractNumber = int(raw_input('Enter starting contract number: '))
@@ -24,28 +24,41 @@ def convert(filename,contnumb,expire,suffix, env):
         if NumberSuffix != '':
             NumberSuffix = '-' + NumberSuffix
 
-    if env == 'Test':
-        FirstPartyID = '1000105838'
-    else:
-        FirstPartyID = '19281501'
+##    if env == 'Test':
+##        FirstPartyID = '1000105838'
+##    else:
+##        FirstPartyID = '19281501'
+    FirstPartyID = g.parmdict['FirstPartyId']
+    iodir = g.parmdict['IOFileDirectory']
+    appdir = g.parmdict['AppDataDirectory']
+    logdir = g.parmdict['LogFileDirectory']
 
     #f = open('h:/JaggaerDC/ContractData.csv','r')
-    f = open(filename,'r')
+    #f = open(filename,'r')
+    f = open(g.parmdict['HeaderDataFilePath'],'r')
 
     #this should probably go in the helper script to be consistent
+    #used to get file crossreferences
     filexrefdict = {}
-    with open('h:/JaggaerDC/ContractFileData.csv','r') as filexref:
+    with open(os.path.join(iodir,'ContractFileData.csv'),'r') as filexref:
         for line in csv.reader(filexref):
             filexrefdict[line[0]] = [line[1],line[2]]  
     
     #fout = open('h:/JaggaerDC/ContractDataOut.csv','wb')
-    outputfilename = os.path.join(foldername,'ContractDataOut.csv')
+    outputfilename = os.path.join(iodir,'ContractDataOut.csv')
     fout = open(outputfilename,'wb')
-    if __name__ == '__main__':
-        r = open('AppData/rules.csv','r')
-    else:
-        r = open('AppData/rules.csv','r')
-    warnfilename = os.path.join(foldername,'warnings.csv')
+    #if __name__ == '__main__':
+    #    r = open('AppData/rules.csv','r')
+    #else:
+    #    r = open('AppData/rules.csv','r')
+    r = open(os.path.join(appdir,'rules.csv'),'r')
+
+    #separate file for missing suppliers
+    missingfilename = os.path.join(iodir,'MissingSuppliers.csv')
+    miss = open(missingfilename,'wb')
+    
+    
+    warnfilename = os.path.join(logdir,'warnings.csv')
     #warn = open('h:/JaggaerDC/warnings.csv','wb')
     warn = open(warnfilename,'wb')
     rules = []
@@ -72,6 +85,7 @@ def convert(filename,contnumb,expire,suffix, env):
 
     mywriter = csv.writer(fout, delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
     warningwriter = csv.writer(warn,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
+    misswriter = csv.writer(miss,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 
     #write the header
     lineout = []
@@ -211,8 +225,13 @@ def convert(filename,contnumb,expire,suffix, env):
                 if ru['SciFieldName'] == 'MainDocumentAttachment':
                     lineout.append(maindoc)
                 else:
+                    if attachments == 'NA':
+                        attachments = ''
                     lineout.append(attachments)
-        mywriter.writerow(lineout)
+        if SupplierID == 'VendorNumberNotFound':
+            misswriter.writerow(line)
+        else:
+            mywriter.writerow(lineout)
     #write warnings
     for wa in warninglist:
         warningline = []
@@ -223,6 +242,7 @@ def convert(filename,contnumb,expire,suffix, env):
     f.close()
     fout.close()
     warn.close()
+    miss.close()
 
 if __name__ == '__main__':
     convert('h:\\JaggaerDC\\ContractData.csv','','','','Test')

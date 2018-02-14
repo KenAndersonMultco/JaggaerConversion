@@ -27,6 +27,9 @@ rfx_with_documents_count = 0
 rfx_loaded_count = 0
 rfx_not_loaded_count = 0
 rfx_file_count = 0
+ascii = [32]
+for x in range(34,127):
+    ascii.append(x)
 
 #define lists to hold logs for sorting
 log1list = []
@@ -40,17 +43,21 @@ log2path = os.path.join(g.parmdict['IOFileDirectory'],'ContractFilesLoaded.csv')
 log3path = os.path.join(g.parmdict['LogFileDirectory'],'RFXsNotLoaded.csv')
 log4path = os.path.join(g.parmdict['IOFileDirectory'],'RFxFilesLoaded.csv')
 log5path = os.path.join(g.parmdict['LogFileDirectory'],'ListOfRFxAndAssociatedContracts.csv')
+log6path = os.path.join(g.parmdict['LogFileDirectory'],'ProblematicFileNames.csv')
+
 #open log files
 log1 = open(log1path,'wb')
 log2 = open(log2path,'wb')
 log3 = open(log3path,'wb')
 log4 = open(log4path,'wb')
 log5 = open(log5path,'wb')
+log6 = open(log6path,'wb')
 log1writer = csv.writer(log1,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 log2writer = csv.writer(log2,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 log3writer = csv.writer(log3,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 log4writer = csv.writer(log4,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 log5writer = csv.writer(log5,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
+log6writer = csv.writer(log6,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 
 #write log file headers
 
@@ -59,6 +66,7 @@ log2writer.writerow(['ContractFolder','ContractFileName'])
 log3writer.writerow(['RFxNumber','RFxName'])
 log4writer.writerow(['RFxFolder','RFxFileName'])
 log5writer.writerow(['RFxNumber','RFxName','AssociatedContractNumber','AssociatedContractName'])
+log6writer.writerow(['Folder','Filename','CharIndex','Character','AsciiCode'])
 
 #read the FM folders and build an RFX Number to RFx Name dictionary
 
@@ -78,7 +86,8 @@ with open(g.parmdict['HeaderDataFilePath'],'r') as contractdata:
         #dict with rfx as key, list of associated contract as value becase rfx can be
         #associated to multiple contracts
         if line[12] <> '':
-            for r in line[12].split(';'):
+            rfxnums = line[12].split(';')
+            for r in list(set(rfxnums)):
                 log5line = []
                 log5line.append(r)
                 log5line.append(rfxnamedict.get(r,'Files not found for this RFX number'))
@@ -91,13 +100,15 @@ with open(g.parmdict['HeaderDataFilePath'],'r') as contractdata:
                 log5list.append(log5line)
                 
                 if r in rfxdict.keys():
-                    wlist = rfxdict[r]
-                    wlist.append(contractnum)
-                    rfxdict[r] = wlist
+                    rfxdict[r].append(contractnum)
+                    #wlist = rfxdict[r]
+                    #wlist.append(contractnum)
+                    #rfxdict[r] = wlist
                 else:
-                    clist = []
-                    clist.append(contractnum)
-                    rfxdict[r] = clist
+                    rfxdict[r] = [contractnum]
+                    #clist = []
+                    #clist.append(contractnum)
+                    #rfxdict[r] = clist
     
 
 #do validation stuff
@@ -108,8 +119,19 @@ for f in contractfolders:
     contract_name = f[11:]
     if contract_nbr in contractlist:
         contract_loaded_count += 1
+        #print contract_nbr
         #write to log 2
         for fname in os.listdir(os.path.join(contractdir,f)):
+            for idx, c in enumerate(fname):
+                if c == '!' or ord(c) not in ascii:
+                    theline = []
+                    theline.append(f)
+                    theline.append(fname)
+                    theline.append(idx)
+                    theline.append(c)
+                    theline.append(ord(c))
+                    log6writer.writerow(theline)
+                    break
             lineout = []
             contract_file_count += 1
             #filepath = os.path.join(contractdir,f,fname)
@@ -133,6 +155,16 @@ for rx in rfxfolders:
         rfx_loaded_count += 1
         #write to log 4
         for fname in os.listdir(os.path.join(rfxdir,rx)):
+            for idx, c in enumerate(fname):
+                if c == '!' or ord(c) not in ascii:
+                    theline = []
+                    theline.append(f)
+                    theline.append(fname)
+                    theline.append(idx)
+                    theline.append(c)
+                    theline.append(ord(c))
+                    log6writer.writerow(theline)
+                    break
             lineout = []
             rfx_file_count += 1
             lineout.append(rx)
@@ -173,6 +205,7 @@ log2.close()
 log3.close()
 log4.close()
 log5.close()
+log6.close()
 
 print 'Count of contracts on the header conversion input file is ' + str(contracts_on_input_file_count)
 print 'Total count of contracts with exported documents is ' + str(contracts_with_documents_count)

@@ -1,21 +1,33 @@
 import csv
 #import editdistance
 import os
+import GetConfig as g
 
 
 
-print os.getcwd()
-if os.getcwd() == 'C:\\Users\\anderskr\\github\\JaggaerConversion':
-    foldername = 'C:\\Users\\anderskr\\github\\JaggaerConversion\\AppData'
-    usersfoldername = 'H:\\JaggaerDC\\AppData'
-else:
-    foldername = 'AppData'
-    usersfoldername = 'AppData'
-print os.getcwd()
-print foldername
+#print os.getcwd()
+#if os.getcwd() == 'C:\\Users\\anderskr\\github\\JaggaerConversion':
+#    foldername = 'C:\\Users\\anderskr\\github\\JaggaerConversion\\AppData'
+#    usersfoldername = 'H:\\JaggaerDC\\AppData'
+#else:
+#    foldername = 'AppData'
+#    usersfoldername = 'AppData'
+#print os.getcwd()
+#print foldername
+usersfoldername = g.parmdict['AppDataDirectory']
+foldername = g.parmdict['AppDataDirectory']
+
 def formatDate(date):
     parts = date.split('/')
-    return parts[2] + '-' + parts[0] + '-' + parts[1] + ' 12:00 AM'
+    if len(parts[0]) == 1:
+        month = '0' + parts[0]
+    else:
+        month = parts[0]
+    if len(parts[1]) == 1:
+        day = '0' + parts[1]
+    else:
+        day = parts[1]
+    return parts[2] + '-' + month + '-' + day + ' 12:00 AM'
 def getFY(date):
     parts = date.split('/')
     if int(parts[0]) > 6:

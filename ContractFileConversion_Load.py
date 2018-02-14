@@ -3,16 +3,19 @@ import csv
 import pysftp
 from datetime import datetime
 
-contractdir = 'R:\\BUS2000113'
-rfxdir = 'R:\\BUS2200'
-cfiledir = 'h:/JaggaerDC/Batches/Contract'
-rfiledir = 'h:/JaggaerDC/Batches/RFx'
+contractdir = 'R:\\QA\\BUS2000113'
+rfxdir = 'R:\\RFx\\BUS2200'
+cfiledir = 'S:/JaggaerConversion/IOFiles/Batches/Contract'
+rfiledir = 'S:/JaggaerConversion/IOFiles/Batches/RFx'
 
 cnopts = pysftp.CnOpts()
 cnopts.hostkeys = None
-srv = pysftp.Connection(host='files.sciquest.com',username='multnomah_ken',
-                        password='multco4sc1qu3st', cnopts=cnopts)
-
+##Sandbox
+##srv = pysftp.Connection(host='files.sciquest.com',username='multnomah_ken',
+##                        password='multco4sc1qu3st', cnopts=cnopts)
+#QA
+srv = pysftp.Connection(host='files.sciquest.com',username='multnomahtest_ken',
+                        password='tcm4multco', cnopts=cnopts, log='h:/JaggaerDC/pysftp_log.txt')
 contractbatches = os.listdir(cfiledir)
 rfxbatches = os.listdir(rfiledir)
 counter = 0
@@ -31,6 +34,10 @@ for f in contractbatches:
                 print e.strerror
                 print 'foldername: ', line[0]
                 print 'filename: ', line[1]
+            except IOError as e:
+                print "I/O error({0}: {1}".format(e.errno, e.strerror)
+                print 'foldername: ', line[0]
+                print 'filename: ', line[1]
     print 'finished at ' + str(datetime.now())
 for f in rfxbatches:                   
     print f
@@ -44,6 +51,10 @@ for f in rfxbatches:
             except WindowsError, e:
                 print 'Windows error #', e.winerror
                 print e.strerror
+                print 'foldername: ', line[0]
+                print 'filename: ', line[1]
+            except IOError as e:
+                print "I/O error({0}: {1}".format(e.errno, e.strerror)
                 print 'foldername: ', line[0]
                 print 'filename: ', line[1]
     print 'finished at ' + str(datetime.now())
