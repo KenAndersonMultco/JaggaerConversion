@@ -28,6 +28,13 @@ def convert(filename,contnumb,expire,suffix,env):
 ##        FirstPartyID = '1000105838'
 ##    else:
 ##        FirstPartyID = '19281501'
+
+#need to mod to pull the contract manager from the input filename
+#so rules will need to be changed
+#should also validate that the ad ids from srm are correct - some of
+#them don't have names associated which seems odd.
+
+
     FirstPartyID = g.parmdict['FirstPartyId']
     iodir = g.parmdict['IOFileDirectory']
     appdir = g.parmdict['AppDataDirectory']
@@ -42,8 +49,8 @@ def convert(filename,contnumb,expire,suffix,env):
     filexrefdict = {}
     with open(os.path.join(iodir,'ContractFileData.csv'),'r') as filexref:
         for line in csv.reader(filexref):
-            filexrefdict[line[0]] = [line[1],line[2]]  
-    
+            filexrefdict[line[0]] = [line[1],line[2]]
+
     #fout = open('h:/JaggaerDC/ContractDataOut.csv','wb')
     outputfilename = os.path.join(iodir,'ContractDataOut.csv')
     fout = open(outputfilename,'wb')
@@ -56,8 +63,8 @@ def convert(filename,contnumb,expire,suffix,env):
     #separate file for missing suppliers
     missingfilename = os.path.join(iodir,'MissingSuppliers.csv')
     miss = open(missingfilename,'wb')
-    
-    
+
+
     warnfilename = os.path.join(logdir,'warnings.csv')
     #warn = open('h:/JaggaerDC/warnings.csv','wb')
     warn = open(warnfilename,'wb')
@@ -65,7 +72,7 @@ def convert(filename,contnumb,expire,suffix,env):
     colnumlookup = {}
     #Put expired rule into a settings file?  If there is anything else that can be put there, do so
     #maybe defaults for contract manager if it can't be identified from the rules.
-    #ExpiredExclusionFilter = 
+    #ExpiredExclusionFilter =
 
     #process rules - make into a list of dictionaries
     for line in csv.reader(r):
@@ -80,7 +87,7 @@ def convert(filename,contnumb,expire,suffix,env):
         #create dictionary of field names and input col no
         if line[2] <> '':
             colnumlookup[line[0]] = int(line[2])
-            
+
     r.close()
 
     mywriter = csv.writer(fout, delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
@@ -120,10 +127,10 @@ def convert(filename,contnumb,expire,suffix,env):
             continue
         lineout = []
         warning = []
-        
+
         #if expired before the number of days before the current date
         #specified, do not import
-    
+
         expdate = line[endindex].split('/')
         expdatetest = date(int(expdate[2]),int(expdate[0]),int(expdate[1]))
         if expdatetest < cutoff:
@@ -138,7 +145,7 @@ def convert(filename,contnumb,expire,suffix,env):
         attachments = filexrefdict.get(sapnumber,['',''])[1]
         #typecode = 'services'
         #typeabbrev = 'svc'
-     
+
         for ru in rules:
             if ru['RuleType'] == 'transform':
                 if ru['SciFieldName'] == 'SecondPartyId':
@@ -155,7 +162,7 @@ def convert(filename,contnumb,expire,suffix,env):
                        lineout.append('')
                    else:
                        lineout.append(SupplierID)
-                   
+
                 if ru['SciFieldName'] == 'ContractNumber':
                     number = projectcode + '-' + typeabbrev + '-' + str(ContractNumber) + \
                     '-' + ch.getFY(line[startindex]) + NumberSuffix
@@ -179,7 +186,7 @@ def convert(filename,contnumb,expire,suffix,env):
                             lineout.append('')
                         else:
                             lineout.append(manager_userid)
-                    else:    
+                    else:
                         warninglist.append(ch.writeWarning('Manager',line[contractnameindex],line[sapnumberindex],'','No contract manager specified'))
                         lineout.append('')
                 elif ru['SciFieldName'] == 'Stakeholders':
@@ -194,7 +201,7 @@ def convert(filename,contnumb,expire,suffix,env):
                             lineout.append(stakeholder_userid)
                     else:
                         warninglist.append(ch.writeWarning('Stakeholder',line[contractnameindex],line[sapnumberindex],'','No stakeholder specified'))
-                        lineout.append('')                 
+                        lineout.append('')
                 #else:
                 #    lineout.append(line[int(ru['InputColNo'])]) #end date need to reformat
             elif ru['RuleType'] == 'default':
@@ -238,7 +245,7 @@ def convert(filename,contnumb,expire,suffix,env):
         for item in wa:
             warningline.append(item)
         warningwriter.writerow(warningline)
-            
+
     f.close()
     fout.close()
     warn.close()
@@ -246,6 +253,3 @@ def convert(filename,contnumb,expire,suffix,env):
 
 if __name__ == '__main__':
     convert('h:\\JaggaerDC\\ContractData.csv','','','','Test')
-
-    
-
