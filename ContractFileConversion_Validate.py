@@ -78,37 +78,38 @@ for z in rfxfolders:
 #build a list of contract numbers and associated RFx numbers
 #with open('h:/JaggaerDC/ContractData.csv','r') as contractdata:
 with open(g.parmdict['HeaderDataFilePath'],'r') as contractdata:
-    for line in csv.reader(contractdata):
-        contracts_on_input_file_count += 1
-        contractnum = line[11]
-        contractname = line[0]
-        contractlist.append(contractnum)
-        #dict with rfx as key, list of associated contract as value becase rfx can be
-        #associated to multiple contracts
-        if line[12] <> '':
-            rfxnums = line[12].split(';')
-            for r in list(set(rfxnums)):
-                log5line = []
-                log5line.append(r)
-                log5line.append(rfxnamedict.get(r,'Files not found for this RFX number'))
-                log5line.append(contractnum)
-                log5line.append(contractname)
-                #log5line = [r,contractnum]
-                #need to include rfxname and contract name; use get function for rfx
-                
-                #log5writer.writerow(log5line)
-                log5list.append(log5line)
-                
-                if r in rfxdict.keys():
-                    rfxdict[r].append(contractnum)
-                    #wlist = rfxdict[r]
-                    #wlist.append(contractnum)
-                    #rfxdict[r] = wlist
-                else:
-                    rfxdict[r] = [contractnum]
-                    #clist = []
-                    #clist.append(contractnum)
-                    #rfxdict[r] = clist
+    for x, line in enumerate(csv.reader(contractdata)):
+        if x > 0:
+            contracts_on_input_file_count += 1
+            contractnum = line[13]
+            contractname = line[0]
+            contractlist.append(contractnum)
+            #dict with rfx as key, list of associated contract as value becase rfx can be
+            #associated to multiple contracts
+            if line[12] <> '':
+                rfxnums = line[14].split(';')
+                for r in list(set(rfxnums)):
+                    log5line = []
+                    log5line.append(r)
+                    log5line.append(rfxnamedict.get(r,'Files not found for this RFX number'))
+                    log5line.append(contractnum)
+                    log5line.append(contractname)
+                    #log5line = [r,contractnum]
+                    #need to include rfxname and contract name; use get function for rfx
+                    
+                    #log5writer.writerow(log5line)
+                    log5list.append(log5line)
+                    
+                    if r in rfxdict.keys():
+                        rfxdict[r].append(contractnum)
+                        #wlist = rfxdict[r]
+                        #wlist.append(contractnum)
+                        #rfxdict[r] = wlist
+                    else:
+                        rfxdict[r] = [contractnum]
+                        #clist = []
+                        #clist.append(contractnum)
+                        #rfxdict[r] = clist
     
 
 #do validation stuff

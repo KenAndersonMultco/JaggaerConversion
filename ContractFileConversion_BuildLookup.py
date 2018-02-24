@@ -109,12 +109,12 @@ contractheaders = []
 #read contract data file to get contract/rfx cross-reference
 
 for line in csv.reader(contractdata):
-    contractheaders.append(line[11])
+    contractheaders.append(line[13])
     if line[12] <> '':
-        rfxnums = list(set(line[12].split(';')))
-        contract_rfx[line[11]] = rfxnums
+        rfxnums = list(set(line[14].split(';')))
+        contract_rfx[line[13]] = rfxnums
         for q in rfxnums:
-            rfx_contract[q] = line[11]
+            rfx_contract[q] = line[14]
 
 #Build lookup file with contract name and associated documents
 

@@ -172,24 +172,24 @@ def convert(filename,contnumb,expire,suffix,env):
                 elif ru['SciFieldName'] == 'StartDate' or ru['SciFieldName'] == 'EndDate':
                     lineout.append(ch.formatDate(line[int(ru['InputColNo'])])) #start date need to reformat
                     #print line[int(ru['InputColNo'])], formatDate(line[int(ru['InputColNo'])])
-                elif ru['SciFieldName'] == 'ContractManagers':
-                    #manager, stakeholder = ch.getManagerStakeholder(line[line[stakeindex], mgrindex])
-                    #above line calls a function that does various defaulting and switching around depending on
-                    #which fields between owner and support person are populated in SAP
-                    #for now removing this call in favor of defaulting a manager based on department or just leaving blank.
-
-                    manager = line[mgrindex]
-                    if manager != '':
-                        manager_userid = ch.getUserID(manager)
-                        if manager_userid == 'NOMATCH':
-                            #write warning
-                            warninglist.append(ch.writeWarning('Manager',line[contractnameindex],line[sapnumberindex],manager,manager_userid))
-                            lineout.append('')
-                        else:
-                            lineout.append(manager_userid)
-                    else:
-                        warninglist.append(ch.writeWarning('Manager',line[contractnameindex],line[sapnumberindex],'','No contract manager specified'))
-                        lineout.append('')
+##                elif ru['SciFieldName'] == 'ContractManagers':
+##                    #manager, stakeholder = ch.getManagerStakeholder(line[line[stakeindex], mgrindex])
+##                    #above line calls a function that does various defaulting and switching around depending on
+##                    #which fields between owner and support person are populated in SAP
+##                    #for now removing this call in favor of defaulting a manager based on department or just leaving blank.
+##
+##                    manager = line[mgrindex]
+##                    if manager != '':
+##                        manager_userid = ch.getUserID(manager)
+##                        if manager_userid == 'NOMATCH':
+##                            #write warning
+##                            warninglist.append(ch.writeWarning('Manager',line[contractnameindex],line[sapnumberindex],manager,manager_userid))
+##                            lineout.append('')
+##                        else:
+##                            lineout.append(manager_userid)
+##                    else:
+##                        warninglist.append(ch.writeWarning('Manager',line[contractnameindex],line[sapnumberindex],'','No contract manager specified'))
+##                        lineout.append('')
                 elif ru['SciFieldName'] == 'Stakeholders':
                     stakeholder = line[stakeindex]
                     if stakeholder != '':
