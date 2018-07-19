@@ -7,8 +7,8 @@ import GetConfig as g
 ##root = tree.getroot()
 ##for child in root:
 ##    parmdict[child.tag] = child.text
-    
 
+#adding randome comment to test commit
 contractdir = g.parmdict['ContractFileDirectory']
 contractfolders = sorted(os.listdir(contractdir))
 
@@ -96,10 +96,10 @@ with open(g.parmdict['HeaderDataFilePath'],'r') as contractdata:
                     log5line.append(contractname)
                     #log5line = [r,contractnum]
                     #need to include rfxname and contract name; use get function for rfx
-                    
+
                     #log5writer.writerow(log5line)
                     log5list.append(log5line)
-                    
+
                     if r in rfxdict.keys():
                         rfxdict[r].append(contractnum)
                         #wlist = rfxdict[r]
@@ -110,7 +110,7 @@ with open(g.parmdict['HeaderDataFilePath'],'r') as contractdata:
                         #clist = []
                         #clist.append(contractnum)
                         #rfxdict[r] = clist
-    
+
 
 #do validation stuff
 print 'validating'
@@ -180,7 +180,7 @@ for rx in rfxfolders:
         lineout.append(rfx_name)
         #log3writer.writerow(lineout)
         log3list.append(lineout)
- 
+
 #sort log lists and write to files
 
 log1list.sort(key=lambda line: line[0])
@@ -199,7 +199,7 @@ for l in log4list:
     log4writer.writerow(l)
 for l in log5list:
     log5writer.writerow(l)
-    
+
 #contractdata.close()
 log1.close()
 log2.close()
@@ -217,7 +217,3 @@ print 'Count of RFXs with documents is ' + str(rfx_with_documents_count)
 print 'Count of RFXs with not documents not associated to a contract on header input file is ' + str(rfx_not_loaded_count)
 print 'Count of RFx files (to be) loaded is ' + str(rfx_file_count)
 print 'Count of RFXs not loaded is ' + str(rfx_not_loaded_count)
-
-
-
-
