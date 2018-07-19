@@ -186,28 +186,40 @@ for f in contractfolders:
                 if attachments == '':
                     attachments = attachments + filestuff
                 else:
-                    attachments = attachments + '|' +  filestuff
+                    if len(attachments) + len(filestuff) + 1 < 32768:
+                        attachments = attachments + '|' +  filestuff
+                    else:
+                        print ContractNumber + ' has too many attachments (in contract docs)'
+                        #need to keep log of documents that won't be uploaded
 
         #add in rfx docs IF THE CONTRACT HAS ASSOCIATED RFX FILES!
         if ContractNumber in contract_rfx:
-            contractrelatedrfx = contract_rfx[ContractNumber]
-            for crfx in contractrelatedrfx:
-                if crfx in rfxdict:
-                    rfxdoclist = rfxdict[crfx]
-                    for z in rfxdoclist:
-                        rfxdoctitle = z[6:]
-                        if len(rfxdoctitle) > 100:
-                            rfxdoctitle = z[6:106]
-                        rfxstuff = rfxdoctitle + '!' + z
-                        if attachments == '':
-                            attachments = attachments + rfxstuff
-                        else:
-                            attachments = attachments + '|' +  rfxstuff
-                else:
-                    logline = []
-                    line =  'rfx ' + crfx + ' associated with contract ' + ContractNumber + ' does not have any files'
-                    logline.append(line)
-                    logwriter.writerow(logline)
+            if len(attachments) < 32768:
+                contractrelatedrfx = contract_rfx[ContractNumber]
+                for crfx in contractrelatedrfx:
+                    if crfx in rfxdict:
+                        rfxdoclist = rfxdict[crfx]
+                        for z in rfxdoclist:
+                            rfxdoctitle = z[6:]
+                            if len(rfxdoctitle) > 100:
+                                rfxdoctitle = z[6:106]
+                            rfxstuff = rfxdoctitle + '!' + z
+                            if attachments == '':
+                                attachments = attachments + rfxstuff
+                            else:
+                                if len(attachments) + len(filestuff) + 1 < 32768:
+                                    attachments = attachments + '|' +  rfxstuff
+                                else:
+                                    print ContractNumber + 'has too many attachments (in rfx docs)'
+                                    #need to log
+                    else:
+                        logline = []
+                        line =  'rfx ' + crfx + ' associated with contract ' + ContractNumber + ' does not have any files'
+                        logline.append(line)
+                        logwriter.writerow(logline)
+            else:
+                print ContractNumber + 'already has too many attachments.  Not loading rfx docs'
+            #need to log docs that won't be loaded
         #there was some reason why I needed to put in 'NA' here but now I don't remember.  It causes an error on the import file
         #so need logic on the contractconversion to blank it out
         if attachments == '':

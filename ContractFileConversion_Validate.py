@@ -86,7 +86,7 @@ with open(g.parmdict['HeaderDataFilePath'],'r') as contractdata:
             contractlist.append(contractnum)
             #dict with rfx as key, list of associated contract as value becase rfx can be
             #associated to multiple contracts
-            if line[12] <> '':
+            if line[14] <> '':
                 rfxnums = line[14].split(';')
                 for r in list(set(rfxnums)):
                     log5line = []
@@ -159,7 +159,7 @@ for rx in rfxfolders:
             for idx, c in enumerate(fname):
                 if c == '!' or ord(c) not in ascii:
                     theline = []
-                    theline.append(f)
+                    theline.append(rx)
                     theline.append(fname)
                     theline.append(idx)
                     theline.append(c)

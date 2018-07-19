@@ -65,6 +65,11 @@ def convert(filename,contnumb,expire,suffix,env):
     missingfilename = os.path.join(iodir,'MissingSuppliers.csv')
     miss = open(missingfilename,'wb')
 
+    #log file for expired contracts not converted
+    expiredfilename = os.path.join(logdir, 'ExpiredContractsNotConverted.csv')
+    expired = open(expiredfilename,'wb')
+
+
 
     warnfilename = os.path.join(logdir,'warnings.csv')
     #warn = open('h:/JaggaerDC/warnings.csv','wb')
@@ -94,7 +99,7 @@ def convert(filename,contnumb,expire,suffix,env):
     mywriter = csv.writer(fout, delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
     warningwriter = csv.writer(warn,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
     misswriter = csv.writer(miss,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
-
+    expwriter = csv.writer(expired,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
     #write the header
     lineout = []
     for ru in rules:
@@ -133,14 +138,29 @@ def convert(filename,contnumb,expire,suffix,env):
         #specified, do not import
 
         expdate = line[endindex].split('/')
+        #date format on input is YYYY-MM-DD, try handling that format
+        #expdate = line[endindex].split('-')
+        #print line[13],expdate[0],expdate[1],expdate[2]
         expdatetest = date(int(expdate[2]),int(expdate[0]),int(expdate[1]))
         if expdatetest < cutoff:
+            expline = []
+            expline.append(line[contractnameindex])
+            expline.append(line[sapnumberindex])
+            expline.append(line[startindex])
+            expline.append(line[endindex])
+            expwriter.writerow(expline)
             continue
 
         #get project and contract type - it is used in the contract number, as well as being its own field
         projectcode = ch.project.get(line[projindex],'badkey')
-        typecode = ch.ContractType.get(line[typeindex],['badkey','badkey'])[0]
-        typeabbrev = ch.ContractType.get(line[typeindex],['badkey','badkey'])[1]
+
+        if line[typeindex] == 'NF':
+            nftype = ch.getNFType(line[contractnameindex])
+            typecode = nftype[0]
+            typeabbrev = nftype[1]
+        else:
+            typecode = ch.ContractType.get(line[typeindex],['badkey','badkey'])[0]
+            typeabbrev = ch.ContractType.get(line[typeindex],['badkey','badkey'])[1]
         sapnumber = line[sapnumberindex]
         maindoc = filexrefdict.get(sapnumber,['',''])[0]
         attachments = filexrefdict.get(sapnumber,['',''])[1]
@@ -251,6 +271,7 @@ def convert(filename,contnumb,expire,suffix,env):
     fout.close()
     warn.close()
     miss.close()
+    expired.close()
 
 if __name__ == '__main__':
     convert('h:\\JaggaerDC\\ContractData.csv','','','','Test')

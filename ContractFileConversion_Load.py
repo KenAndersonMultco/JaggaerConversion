@@ -2,20 +2,27 @@ import os
 import csv
 import pysftp
 from datetime import datetime
+import GetConfig as g
 
-contractdir = 'R:\\QA\\BUS2000113'
-rfxdir = 'R:\\RFx\\BUS2200'
-cfiledir = 'S:/JaggaerConversion/IOFiles/Batches/Contract'
-rfiledir = 'S:/JaggaerConversion/IOFiles/Batches/RFx'
-
+contractdir = g.parmdict['ContractFileDirectory']
+rfxdir = g.parmdict['RFXFileDirectory']
+cfiledir = g.parmdict['ContractBatchDirectory']
+rfiledir = g.parmdict['RFXBatchDirectory']
+ftphost = g.parmdict['FTPHost']
+ftpusername = g.parmdict['FTPUsername']
+ftppassword = g.parmdict['FTPPassword']
+logfile = os.path.join(g.parmdict['LogFileDirectory'],'JaggaerFTPlog.txt')
 cnopts = pysftp.CnOpts()
 cnopts.hostkeys = None
 ##Sandbox
 ##srv = pysftp.Connection(host='files.sciquest.com',username='multnomah_ken',
 ##                        password='multco4sc1qu3st', cnopts=cnopts)
 #QA
-srv = pysftp.Connection(host='files.sciquest.com',username='multnomahtest_ken',
-                        password='tcm4multco', cnopts=cnopts, log='h:/JaggaerDC/pysftp_log.txt')
+##srv = pysftp.Connection(host='files.sciquest.com',username='multnomahtest_ken',
+##                        password='tcm4multco', cnopts=cnopts, log='h:/JaggaerDC/pysftp_log.txt')
+#Prod
+srv = pysftp.Connection(host=ftphost,username=ftpusername,
+                        password=ftppassword, cnopts=cnopts, log=logfile)
 contractbatches = os.listdir(cfiledir)
 rfxbatches = os.listdir(rfiledir)
 counter = 0

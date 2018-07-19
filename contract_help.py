@@ -2,6 +2,7 @@ import csv
 #import editdistance
 import os
 import GetConfig as g
+import re
 
 
 
@@ -116,6 +117,42 @@ def getUserID(name):
     return 'NOMATCH'
 def getSupplierID(SAPVendorNumber):
     return suppliers.get(SAPVendorNumber,'VendorNumberNotFound')
+
+def getNFType(contractname):
+
+    titletoken = re.split('[-/\s]',contractname)
+    lenw = len(titletoken)
+
+    for x in range(0, lenw-2):
+        t = titletoken[x:x+3]
+        tg = ''
+        for z in t:
+            z = z.lower()
+            tg = tg + z + ' '
+        tg = tg.strip()
+        if tg in nftypes.keys():
+            return nftypes[tg]
+
+    for x in range(0, lenw-1):
+        b = titletoken[x:x+2] #note this returns a list
+        bg = ''
+        for y in b:
+            y = y.lower()
+            bg = bg + y + ' '
+        bg = bg.strip()
+        if bg in nftypes.keys():
+            return nftypes[bg]
+
+    for w in titletoken:
+        w = w.lower()
+        if w in nftypes.keys():
+            return nftypes[w]
+
+    return ['NonSpecific', 'NOSPEC']
+
+
+
+
 def writeWarning(colname,contractname,contractnumber,personname,msg):
     warning = []
     warning.append(colname)
@@ -221,3 +258,11 @@ with open(projectsfilename,'r') as proj:
     for line in csv.reader(proj):
         project[line[0]] = line[1]
     proj.close()
+
+#Non-Financial Agreement Subtypes
+nftypes = {}
+ntfilename = os.path.join(foldername,'nftypes.csv')
+with open(ntfilename,'r') as nft:
+    for line in csv.reader(nft):
+        nftypes[line[0]] = [line[2],line[3]]
+    nft.close()
