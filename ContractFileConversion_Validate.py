@@ -16,6 +16,7 @@ rfxdir = g.parmdict['RFXFileDirectory']
 rfxfolders = sorted(os.listdir(rfxdir))
 
 contractlist = []
+contractswithdocs = []
 rfxdict = {}
 rfxnamedict = {}
 contract_loaded_count = 0
@@ -37,6 +38,8 @@ log2list = []
 log3list = []
 log4list = []
 log5list = []
+log7list = []
+log8list = []
 
 log1path = os.path.join(g.parmdict['LogFileDirectory'],'ContractsNotLoaded.csv')
 log2path = os.path.join(g.parmdict['IOFileDirectory'],'ContractFilesLoaded.csv')
@@ -44,6 +47,8 @@ log3path = os.path.join(g.parmdict['LogFileDirectory'],'RFXsNotLoaded.csv')
 log4path = os.path.join(g.parmdict['IOFileDirectory'],'RFxFilesLoaded.csv')
 log5path = os.path.join(g.parmdict['LogFileDirectory'],'ListOfRFxAndAssociatedContracts.csv')
 log6path = os.path.join(g.parmdict['LogFileDirectory'],'ProblematicFileNames.csv')
+log7path = os.path.join(g.parmdict['LogFileDirectory'],'ContractsWithNoContractDocs.csv')
+
 
 #open log files
 log1 = open(log1path,'wb')
@@ -52,12 +57,17 @@ log3 = open(log3path,'wb')
 log4 = open(log4path,'wb')
 log5 = open(log5path,'wb')
 log6 = open(log6path,'wb')
+log7 = open(log7path,'wb')
+
+
 log1writer = csv.writer(log1,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 log2writer = csv.writer(log2,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 log3writer = csv.writer(log3,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 log4writer = csv.writer(log4,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 log5writer = csv.writer(log5,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 log6writer = csv.writer(log6,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
+log7writer = csv.writer(log7,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
+
 
 #write log file headers
 
@@ -67,13 +77,20 @@ log3writer.writerow(['RFxNumber','RFxName'])
 log4writer.writerow(['RFxFolder','RFxFileName'])
 log5writer.writerow(['RFxNumber','RFxName','AssociatedContractNumber','AssociatedContractName'])
 log6writer.writerow(['Folder','Filename','CharIndex','Character','AsciiCode'])
+log7writer.writerow(['ContractNumber', 'ContractName','SRMContractType'])
 
-#read the FM folders and build an RFX Number to RFx Name dictionary
+
+
+#read the RM folders and build an RFX Number to RFx Name dictionary
 
 for z in rfxfolders:
     rfxnum = z[0:10]
     rfxname = z[11:]
     rfxnamedict[rfxnum] = rfxname
+
+#Read RM folders and build list of contract numbers with docs
+for c in contractfolders:
+    contractswithdocs.append(c[0:10])
 
 #build a list of contract numbers and associated RFx numbers
 #with open('h:/JaggaerDC/ContractData.csv','r') as contractdata:
@@ -84,6 +101,15 @@ with open(g.parmdict['HeaderDataFilePath'],'r') as contractdata:
             contractnum = line[13]
             contractname = line[0]
             contractlist.append(contractnum)
+
+            #write to log if contract has no docs
+            if contractnum not in contractswithdocs:
+                log7line = []
+                log7line.append(contractnum)
+                log7line.append(contractname)
+                log7line.append(line[1]) #sap contract type
+                log7list.append(log7line)
+            
             #dict with rfx as key, list of associated contract as value becase rfx can be
             #associated to multiple contracts
             if line[14] <> '':
@@ -188,6 +214,7 @@ log2list.sort(key=lambda line: line[0])
 log3list.sort(key=lambda line: line[0][0:10] + line[1][0:5])
 log4list.sort(key=lambda line: line[0][0:10] + line[1][0:5])
 log5list.sort(key=lambda line: line[0] + line[2])
+log7list.sort(key=lambda line: line[0])
 
 for l in log1list:
     log1writer.writerow(l)
@@ -199,6 +226,8 @@ for l in log4list:
     log4writer.writerow(l)
 for l in log5list:
     log5writer.writerow(l)
+for l in log7list:
+    log7writer.writerow(l)
 
 #contractdata.close()
 log1.close()
@@ -207,6 +236,7 @@ log3.close()
 log4.close()
 log5.close()
 log6.close()
+log7.close()
 
 print 'Count of contracts on the header conversion input file is ' + str(contracts_on_input_file_count)
 print 'Total count of contracts with exported documents is ' + str(contracts_with_documents_count)

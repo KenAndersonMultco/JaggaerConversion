@@ -100,8 +100,10 @@ contractdata = open(g.parmdict['HeaderDataFilePath'],'r')
 #fout = open('h:/JaggaerDC/ContractFileData.csv','wb')
 fout = open(os.path.join(iofiledir,'ContractFileData.csv'),'wb')
 log = open(os.path.join(logfiledir,'ContractFileXrefLog.csv'),'wb')
+log2 = open(os.path.join(logfiledir,'AttachmentsNotIncluded.csv'),'wb')
 mywriter = csv.writer(fout,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 logwriter = csv.writer(log,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
+logwriter2 = csv.writer(log2,delimiter = ',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
 contract_rfx = {}
 rfx_contract = {}
 contractheaders = []
@@ -145,7 +147,7 @@ for rfxf in rfxfolders:
         line = 'RFx Number ' + RFxNumber + ' is not associated with a contract on the conversion input file'
         logline.append(line)
         logwriter.writerow(logline)
-        
+
 for f in contractfolders:
     ContractNumber = f[0:10]
     if ContractNumber in contractheaders:
@@ -176,8 +178,11 @@ for f in contractfolders:
         lineout.append(maintitle+'!'+maindoc)
         #get additional contract attachments
         attachments = ''
+
+
         
         for x in namelist:
+            notincluded = []
             if x != maindoc:
                 attachmenttitle = x[17:]
                 if len(attachmenttitle) > 100:
@@ -190,6 +195,9 @@ for f in contractfolders:
                         attachments = attachments + '|' +  filestuff
                     else:
                         print ContractNumber + ' has too many attachments (in contract docs)'
+                        notincluded.append(ContractNumber)
+                        notincluded.append(x)
+                        logwriter2.writerow(notincluded)
                         #need to keep log of documents that won't be uploaded
 
         #add in rfx docs IF THE CONTRACT HAS ASSOCIATED RFX FILES!
@@ -200,6 +208,7 @@ for f in contractfolders:
                     if crfx in rfxdict:
                         rfxdoclist = rfxdict[crfx]
                         for z in rfxdoclist:
+                            notincluded = []
                             rfxdoctitle = z[6:]
                             if len(rfxdoctitle) > 100:
                                 rfxdoctitle = z[6:106]
@@ -211,6 +220,9 @@ for f in contractfolders:
                                     attachments = attachments + '|' +  rfxstuff
                                 else:
                                     print ContractNumber + 'has too many attachments (in rfx docs)'
+                                    notincluded.append(ContractNumber)
+                                    notincluded.append(z)
+                                    logwriter2.writerow(notincluded)
                                     #need to log
                     else:
                         logline = []
@@ -240,6 +252,7 @@ print str(rfxfilecount) + ' rfx files read'
 print str(contractfilecount) + ' contract files read.'
 fout.close()
 log.close()
+log2.close()
 contractdata.close()
 
 
